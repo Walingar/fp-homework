@@ -257,7 +257,6 @@ natMod a b
   | natCompare a b == -1 = a
   | otherwise = natSub a (natMul (natDiv a b) b)
 
--- TODO: doctests
 data Tree a
   = Leaf
   | Node [a]
@@ -265,14 +264,37 @@ data Tree a
          (Tree a)
   deriving (Show)
 
-treeIsEmpty :: Tree a -> Bool
-treeIsEmpty Leaf = True
-treeIsEmpty _    = False
+treeFromList :: Ord a => [a] -> Tree a
+treeFromList []     = Leaf
+treeFromList (x:xs) = treeAdd (treeFromList xs) x
 
+-- |
+-- >>> treeToList $ treeFromList [2, 1, 5, 19, -1]
+-- [-1,1,2,5,19]
+treeToList :: Tree a -> [a]
+treeToList Leaf                   = []
+treeToList (Node list left right) = treeToList left ++ list ++ treeToList right
+
+-- |
+-- >>> treeSize $ treeFromList [2, 1, 5, 19, -1]
+-- 5
 treeSize :: Tree a -> Int
 treeSize Leaf                   = 0
 treeSize (Node list left right) = length list + treeSize left + treeSize right
 
+-- |
+-- >>> treeIsEmpty $ treeFromList []
+-- True
+-- >>> treeIsEmpty $ treeFromList [1, 3, 2]
+-- False
+treeIsEmpty :: Tree a -> Bool
+treeIsEmpty tree = treeSize tree == 0
+
+-- |
+-- >>> treeContains (treeFromList [2, 1, 5, 19, -1]) 1
+-- True
+-- >>> treeContains (treeFromList [2, 1, 5, 19, -1]) 0
+-- False
 treeContains :: Ord a => Tree a -> a -> Bool
 treeContains tree value =
   case treeFind tree value of
@@ -292,17 +314,14 @@ treeAdd Leaf value = Node [value] Leaf Leaf
 treeAdd (Node [] _ _) _ = error "Unexpected empty list in Node"
 treeAdd (Node (x:xs) left right) value
   | x == value = Node (value : x : xs) left right
-  | x > value = treeAdd left value
-  | otherwise = treeAdd right value
+  | x > value = Node (x : xs) (treeAdd left value) right
+  | otherwise = Node (x : xs) left (treeAdd right value)
 
-treeFromList :: Ord a => [a] -> Tree a
-treeFromList []     = Leaf
-treeFromList (x:xs) = treeAdd (treeFromList xs) x
-
-treeToList :: Tree a -> [a]
-treeToList Leaf                   = []
-treeToList (Node list left right) = treeToList left ++ list ++ treeToList right
-
+-- |
+-- >>> let (ans, ok) = treeRemove (treeFromList [2, 1, 5, 19, -1]) 5
+--
+-- >>> treeToList $ ans
+-- [-1,1,2,19]
 treeRemove :: Ord a => Tree a -> a -> (Tree a, Bool)
 treeRemove Leaf _ = (Leaf, False)
 treeRemove (Node [] _ _) _ = error "Unexpected empty list in Node"
@@ -316,11 +335,15 @@ treeRemove (Node (x:xs) left right) value
             let (removed, tree) = treeMinRemove right
              in (Node removed left tree, True)
       _ -> (Node xs left right, True)
-  | x > value = treeRemove left value
-  | otherwise = treeRemove right value
+  | x > value =
+    let (ans, ok) = treeRemove left value
+     in (Node (x : xs) ans right, ok)
+  | otherwise =
+    let (ans, ok) = treeRemove right value
+     in (Node (x : xs) left ans, ok)
 
 treeMinRemove :: Ord a => Tree a -> ([a], Tree a)
-treeMinRemove Leaf = error "Unexprected empty tree"
+treeMinRemove Leaf = error "Unexpected empty tree"
 treeMinRemove (Node list Leaf _) = (list, Leaf)
 treeMinRemove (Node list left right) = (deleted, Node list leftPrepared right)
   where
