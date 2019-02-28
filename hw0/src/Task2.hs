@@ -1,10 +1,11 @@
 module Task2
-       ( doubleNeg,
-         excludedNeg,
-         pierce,
-         doubleNegElim,
-         thirdNegElim
-       ) where
+  ( doubleNeg
+  , excludedNeg
+  , pierce
+  , doubleNegElim
+  , thirdNegElim
+  ) where
+
 import Data.Void (Void)
 
 type Neg a = a -> Void
