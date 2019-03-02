@@ -1,5 +1,6 @@
 module Task5
-  ( succChurch
+  ( zero
+  , succChurch
   , churchPlus
   , churchMult
   , churchToInt
@@ -9,7 +10,7 @@ module Task5
 type Nat a = (a -> a) -> a -> a
 
 zero :: Nat a
-zero f x = x
+zero _ x = x
 
 succChurch :: Nat a -> Nat a
 succChurch f g y = f g (g y)
