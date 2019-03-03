@@ -28,7 +28,6 @@ module Task3
   , treeAdd
   , treeFromList
   , treeRemove
-  , treeToList
   ) where
 
 import Data.Foldable (Foldable (..))
@@ -93,7 +92,6 @@ daysToParty :: Day -> Int
 daysToParty Fri = 0
 daysToParty day = 1 + daysToParty (nextDay day)
 
--- TODO: doctests
 newtype CastleWithLord =
   CastleWithLord Bool
 
@@ -274,11 +272,8 @@ treeFromList []     = Leaf
 treeFromList (x:xs) = treeAdd (treeFromList xs) x
 
 -- |
--- >>> treeToList $ treeFromList [2, 1, 5, 19, -1]
+-- >>> toList $ treeFromList [2, 1, 5, 19, -1]
 -- [-1,1,2,5,19]
-treeToList :: Tree a -> [a]
-treeToList Leaf                   = []
-treeToList (Node list left right) = treeToList left ++ list ++ treeToList right
 
 -- |
 -- >>> treeSize $ treeFromList [2, 1, 5, 19, -1]
@@ -325,7 +320,7 @@ treeAdd (Node (x:xs) left right) value
 -- |
 -- >>> let (ans, ok) = treeRemove (treeFromList [2, 1, 5, 19, -1]) 5
 --
--- >>> treeToList $ ans
+-- >>> toList $ ans
 -- [-1,1,2,19]
 treeRemove :: Ord a => Tree a -> a -> (Tree a, Bool)
 treeRemove Leaf _ = (Leaf, False)
