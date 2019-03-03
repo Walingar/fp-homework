@@ -19,13 +19,13 @@ order3 (a, b, c) = (x, y, z)
 -- >>> smartReplicate [1,2,3]
 -- [1,2,2,3,3,3]
 smartReplicate :: [Int] -> [Int]
-smartReplicate = concatMap (\x -> replicate x x)
+smartReplicate = concatMap $ \x -> replicate x x
 
 -- |
 -- >>> contains 3 [[1..5], [2,0], [3,4]]
 -- [[1,2,3,4,5],[3,4]]
 contains :: Ord a => a -> [[a]] -> [[a]]
-contains element = filter (elem element)
+contains element = filter $ elem element
 
 -- |
 -- >>> stringSum "1 1"
@@ -42,4 +42,4 @@ contains element = filter (elem element)
 -- >>> map stringSum passTests
 -- [1,6,1,1,1,12345,60,1368,-1,-6,-12345,-1368,553,400]
 stringSum :: String -> Int
-stringSum s = sum (map read (words s))
+stringSum s = sum $ map read $ words s
