@@ -7,7 +7,9 @@ module Task5
   , toString
   ) where
 
--- TODO tests
+-- |
+-- >>> maybeConcat [Just [1,2,3], Nothing, Just [4,5]]
+-- [1,2,3,4,5]
 maybeConcat :: [Maybe [a]] -> [a]
 maybeConcat = foldr f []
   where
@@ -15,6 +17,9 @@ maybeConcat = foldr f []
     f Nothing list    = list
     f (Just cur) list = cur ++ list
 
+-- |
+-- >>> eitherConcat [Left [3], Right [1,2,3], Left [5], Right [4,5]]
+-- ([3,5],[1,2,3,4,5])
 eitherConcat :: (Monoid a, Monoid b) => [Either a b] -> (a, b)
 eitherConcat = foldr f (mempty, mempty)
   where
@@ -49,6 +54,7 @@ instance (Semigroup a, Semigroup b) => Semigroup (ThisOrThat a b) where
 
 newtype Name =
   Name String
+  deriving (Show)
 
 instance Semigroup Name where
   (<>) :: Name -> Name -> Name
@@ -56,6 +62,11 @@ instance Semigroup Name where
   (<>) (Name a) (Name "") = Name a
   (<>) (Name a) (Name b)  = Name (a ++ ('.' : b))
 
+-- |
+-- >>> Name "root" <> Name "server"
+-- Name "root.server"
+-- >>> Name "" <> Name "server"
+-- Name "server"
 instance Monoid Name where
   mempty :: Name
   mempty = Name ""
@@ -66,7 +77,7 @@ newtype Endo a = Endo
 
 instance Semigroup (Endo a) where
   (<>) :: Endo a -> Endo a -> Endo a
-  (<>) (Endo a) (Endo b) = Endo $ a . b
+  (<>) Endo {getEndo = a} Endo {getEndo = b} = Endo $ a . b
 
 instance Monoid (Endo a) where
   mempty :: Endo a
@@ -95,6 +106,11 @@ fromString = foldr f mempty
     f :: Char -> Builder -> Builder
     f current builder = One current <> builder
 
+-- |
+-- >>> toString $ fromString "check this functions"
+-- "check this functions"
+-- >>> toString $ fromString ""
+-- ""
 toString :: Builder -> String
 toString (One ch) = [ch]
 toString (Many list) = foldr f "" list
