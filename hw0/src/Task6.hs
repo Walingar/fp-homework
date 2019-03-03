@@ -16,5 +16,5 @@ x2 = null $ mapMaybe foo "pole chudes ochen' chudesno"
 foo :: Char -> Maybe Double
 foo char =
   case char == 'o' of
-    True -> Just $ exp pi
+    True  -> Just $ exp pi
     False -> Nothing
