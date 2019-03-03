@@ -19,8 +19,8 @@ eitherConcat :: (Monoid a, Monoid b) => [Either a b] -> (a, b)
 eitherConcat = foldr f (mempty, mempty)
   where
     f :: (Monoid a, Monoid b) => Either a b -> (a, b) -> (a, b)
-    f (Left left) (a, b)   = (a <> left, b)
-    f (Right right) (a, b) = (a, b <> right)
+    f (Left left) (a, b)   = (left <> a, b)
+    f (Right right) (a, b) = (a, right <> b)
 
 data NonEmpty a =
   a :| [a]
