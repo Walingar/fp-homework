@@ -1,7 +1,7 @@
 module Task1
-  ( order3
+  ( contains
+  , order3
   , smartReplicate
-  , contains
   , stringSum
   ) where
 
@@ -24,7 +24,7 @@ smartReplicate = concatMap $ \x -> replicate x x
 -- |
 -- >>> contains 3 [[1..5], [2,0], [3,4]]
 -- [[1,2,3,4,5],[3,4]]
-contains :: Ord a => a -> [[a]] -> [[a]]
+contains :: Eq a => a -> [[a]] -> [[a]]
 contains element = filter $ elem element
 
 -- |

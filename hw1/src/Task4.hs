@@ -1,13 +1,13 @@
 {-# LANGUAGE InstanceSigs #-}
 
 module Task4
-  ( splitOn
-  , joinWith
+  ( joinWith
+  , splitOn
+  , NonEmpty(..)
   ) where
 
 data Pair a =
-  Pair a
-       a
+  Pair a a
   deriving (Show)
 
 data NonEmpty a =
@@ -20,6 +20,7 @@ data NonEmpty a =
 instance Foldable Pair where
   foldMap :: Monoid m => (a -> m) -> Pair a -> m
   foldMap f (Pair a b) = f a <> f b
+
   foldr :: (a -> b -> b) -> b -> Pair a -> b
   foldr f z (Pair a b) = f a (f b z)
 
@@ -28,9 +29,14 @@ instance Foldable Pair where
 -- [1,2,3,4,5]
 instance Foldable NonEmpty where
   foldMap :: Monoid m => (a -> m) -> NonEmpty a -> m
-  foldMap f (a :| as) = f a `mappend` foldMap f as
+  foldMap f (a :| as) = f a <> foldMap f as
+
   foldr :: (a -> b -> b) -> b -> NonEmpty a -> b
   foldr f z (a :| as) = f a (foldr f z as)
+
+instance Semigroup (NonEmpty a) where
+  (<>) :: NonEmpty a -> NonEmpty a -> NonEmpty a
+  (<>) (x :| xs) (y :| ys) = x :| (xs ++ (y : ys))
 
 -- |
 -- >>> splitOn '/' "path/to/file"

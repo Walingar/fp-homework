@@ -1,11 +1,13 @@
 {-# LANGUAGE InstanceSigs #-}
 
 module Task5
-  ( maybeConcat
-  , eitherConcat
+  ( eitherConcat
   , fromString
+  , maybeConcat
   , toString
   ) where
+
+import Task4 (NonEmpty (..))
 
 -- |
 -- >>> maybeConcat [Just [1,2,3], Nothing, Just [4,5]]
@@ -27,18 +29,11 @@ eitherConcat = foldr f (mempty, mempty)
     f (Left left) (a, b)   = (left <> a, b)
     f (Right right) (a, b) = (a, right <> b)
 
-data NonEmpty a =
-  a :| [a]
-
 data ThisOrThat a b
   = This a
   | That b
   | Both a
          b
-
-instance Semigroup (NonEmpty a) where
-  (<>) :: NonEmpty a -> NonEmpty a -> NonEmpty a
-  (<>) (x :| xs) (y :| ys) = x :| (xs ++ (y : ys))
 
 instance (Semigroup a, Semigroup b) => Semigroup (ThisOrThat a b) where
   (<>) :: ThisOrThat a b -> ThisOrThat a b -> ThisOrThat a b

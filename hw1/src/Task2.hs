@@ -1,7 +1,7 @@
 module Task2
-  ( remove
-  , mergeSort
+  ( mergeSort
   , randomIntList
+  , remove
   ) where
 
 import System.Random (newStdGen, randomRs)
@@ -38,7 +38,6 @@ mergeSort list = mergeImpl (mergeSort left) (mergeSort right)
     mergeImpl :: Ord a => [a] -> [a] -> [a]
     mergeImpl [] xs = xs
     mergeImpl xs [] = xs
-    mergeImpl (x:xs) (y:ys) =
-      if x <= y
-        then x : mergeImpl xs (y : ys)
-        else y : mergeImpl (x : xs) ys
+    mergeImpl (x:xs) (y:ys)
+      | x <= y    = x : mergeImpl xs (y : ys)
+      | otherwise = y : mergeImpl (x : xs) ys

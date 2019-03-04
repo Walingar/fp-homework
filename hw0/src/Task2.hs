@@ -1,8 +1,8 @@
 module Task2
   ( doubleNeg
+  , doubleNegElim
   , excludedNeg
   , pierce
-  , doubleNegElim
   , thirdNegElim
   ) where
 

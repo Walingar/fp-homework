@@ -1,7 +1,7 @@
 module Task3
   ( composition
-  , identity
   , contraction
+  , identity
   , permutation
   ) where
 

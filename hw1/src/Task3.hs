@@ -1,36 +1,44 @@
 {-# LANGUAGE InstanceSigs #-}
 
 module Task3
-  ( nextDay
+  ( CastleWithLord(..)
+  , City(..)
+  , CityProcessResult(..)
+  , CityWall(..)
+  , Day(..)
+  , EducationStructure(..)
+  , Family(..)
+  , HouseList(..)
+  , Nat(..)
+  , Tree(..)
   , afterDays
-  , isWeekend
-  , daysToParty
   , buildCastle
   , buildEducationStructure
   , buildHouse
-  , lordIsComing
   , buildTheWallAndHoldTheDoor
-  , natToInt
+  , daysToParty
   , intToNat
+  , isWeekend
+  , lordIsComing
+  , natToInt
+  , natDiv
   , natSum
   , natMul
   , natSub
-  , natEq
-  , natCompare
   , natIsEven
-  , natDiv
   , natMod
-  , Tree(..)
-  , treeIsEmpty
-  , treeSize
-  , treeFind
-  , treeContains
+  , nextDay
   , treeAdd
+  , treeContains
+  , treeFind
   , treeFromList
+  , treeIsEmpty
   , treeRemove
+  , treeSize
   ) where
 
 import Data.Foldable (Foldable (..))
+import Task4 (NonEmpty (..))
 
 data Day
   = Mon
@@ -125,32 +133,49 @@ data City =
        (Maybe EducationStructure)
        HouseList
 
-buildCastle :: City -> Either String City
-buildCastle (City Nothing educationStructure houses) =
-  Right $ City (Just (CastleWithLord False, CityWall False)) educationStructure houses
-buildCastle _ = Left "Can't build castle because it built yet"
+data CityProcessResult
+  = Success City
+  | Error String
 
-buildEducationStructure :: City -> EducationStructure -> Either String City
-buildEducationStructure (City castle Nothing houses) structure = Right $ City castle (Just structure) houses
+buildCastle :: City -> CityProcessResult
+buildCastle (City Nothing educationStructure houses) =
+  Success $ City (Just (CastleWithLord False, CityWall False)) educationStructure houses
+buildCastle _ =
+  Error "Can't build castle because it built yet"
+
+buildEducationStructure :: City -> EducationStructure -> CityProcessResult
+buildEducationStructure (City castle Nothing houses) structure =
+  Success $ City castle (Just structure) houses
 buildEducationStructure (City _ existStructure _) structure =
-  Left $ "Can't build " ++ show structure ++ " because " ++ show existStructure ++ " built yet"
+  Error $ "Can't build " ++ show structure ++ " because " ++ show existStructure ++ " built yet"
 
 buildHouse :: City -> Family -> City
-buildHouse (City castle educationStructure houses) family = City castle educationStructure (House family houses)
+buildHouse (City castle educationStructure houses) family =
+  City castle educationStructure (House family houses)
 
 countPeople :: HouseList -> Int
 countPeople (FirstHouse family)       = familyToInt family
 countPeople (House family housesTail) = familyToInt family + countPeople housesTail
 
-lordIsComing :: City -> Either String City
-lordIsComing = undefined
+lordIsComing :: City -> CityProcessResult
+lordIsComing (City Nothing _ _) =
+  Error "Lord, you don't have home!"
+lordIsComing (City (Just (CastleWithLord True, _)) _ _) =
+  Error "Lord, you should fight for your honor!"
+lordIsComing (City (Just (CastleWithLord False, wall)) educationStructure houses) =
+  Success $ City (Just (CastleWithLord True, wall)) educationStructure houses
 
-buildTheWallAndHoldTheDoor :: City -> Either String City
+buildTheWallAndHoldTheDoor :: City -> CityProcessResult
 buildTheWallAndHoldTheDoor (City (Just (CastleWithLord True, CityWall False)) educationStructure houses) =
   if countPeople houses >= 10
-    then Right $ City (Just (CastleWithLord True, CityWall True)) educationStructure houses
-    else Left "Can't build the wall because there are not enough people"
-buildTheWallAndHoldTheDoor _ = Left "Can't build the wall because there is no Lord"
+    then Success $ City (Just (CastleWithLord True, CityWall True)) educationStructure houses
+    else Error "Can't build the wall because there are not enough people"
+buildTheWallAndHoldTheDoor (City (Just (CastleWithLord False, CityWall False)) _ _) =
+  Error "Can't build the wall because there is no Lord"
+buildTheWallAndHoldTheDoor (City (Just (_, CityWall True)) _ _) =
+  Error "Can't build the wall because it already built"
+buildTheWallAndHoldTheDoor (City Nothing _ _) =
+  Error "Can't build the wall because there is no Castle"
 
 data Nat
   = Z
@@ -201,25 +226,27 @@ natSub a Z         = a
 natSub (S a) (S b) = natSub a b
 
 -- |
--- >>> natCompare (intToNat 11) (intToNat 24)
--- -1
--- >>> natCompare (intToNat 11) (intToNat 11)
--- 0
--- >>> natCompare (intToNat 24) (intToNat 11)
--- 1
-natCompare :: Nat -> Nat -> Int
-natCompare Z Z         = 0
-natCompare Z _         = -1
-natCompare _ Z         = 1
-natCompare (S a) (S b) = natCompare a b
+-- >>> intToNat 11 == intToNat 24
+-- False
+-- >>> intToNat 11 == intToNat 11
+-- True
+instance Eq Nat where
+  (==) :: Nat -> Nat -> Bool
+  (==) a b = compare a b == EQ
 
 -- |
--- >>> natEq (intToNat 11) (intToNat 24)
--- False
--- >>> natEq (intToNat 11) (intToNat 11)
--- True
-natEq :: Nat -> Nat -> Bool
-natEq a b = natCompare a b == 0
+-- >>> compare (intToNat 11) (intToNat 24)
+-- LT
+-- >>> compare (intToNat 11) (intToNat 11)
+-- EQ
+-- >>> compare (intToNat 24) (intToNat 11)
+-- GT
+instance Ord Nat where
+   compare :: Nat -> Nat -> Ordering
+   compare Z Z         = EQ
+   compare Z _         = LT
+   compare _ Z         = GT
+   compare (S a) (S b) = compare a b
 
 -- |
 -- >>> natIsEven $ intToNat 11
@@ -243,7 +270,7 @@ natIsEven (S (S a)) = natIsEven a
 natDiv :: Nat -> Nat -> Nat
 natDiv _ Z = error "Expected non-zero second argument"
 natDiv a b
-  | natCompare a b == -1 = Z
+  | a < b    = Z
   | otherwise = S $ natDiv (natSub a b) b
 
 -- |
@@ -257,23 +284,22 @@ natDiv a b
 -- 23
 natMod :: Nat -> Nat -> Nat
 natMod a b
-  | natCompare a b == -1 = a
+  | a < b    = a
   | otherwise = natSub a (natMul (natDiv a b) b)
 
 data Tree a
   = Leaf
-  | Node [a]
+  | Node (NonEmpty a)
          (Tree a)
          (Tree a)
   deriving (Show)
 
-treeFromList :: Ord a => [a] -> Tree a
-treeFromList []     = Leaf
-treeFromList (x:xs) = treeAdd (treeFromList xs) x
-
 -- |
 -- >>> toList $ treeFromList [2, 1, 5, 19, -1]
 -- [-1,1,2,5,19]
+treeFromList :: Ord a => [a] -> Tree a
+treeFromList []     = Leaf
+treeFromList (x:xs) = treeAdd (treeFromList xs) x
 
 -- |
 -- >>> treeSize $ treeFromList [2, 1, 5, 19, -1]
@@ -288,7 +314,8 @@ treeSize (Node list left right) = length list + treeSize left + treeSize right
 -- >>> treeIsEmpty $ treeFromList [1, 3, 2]
 -- False
 treeIsEmpty :: Tree a -> Bool
-treeIsEmpty tree = treeSize tree == 0
+treeIsEmpty Leaf = True
+treeIsEmpty _    = False
 
 -- |
 -- >>> treeContains (treeFromList [2, 1, 5, 19, -1]) 1
@@ -303,19 +330,17 @@ treeContains tree value =
 
 treeFind :: Ord a => Tree a -> a -> Maybe (Tree a)
 treeFind Leaf _ = Nothing
-treeFind (Node [] _ _) _ = error "Unexpected empty list in Node"
-treeFind node@(Node (x:_) left right) value
+treeFind node@(Node (x :| _) left right) value
   | x == value = Just node
   | x > value = treeFind left value
   | otherwise = treeFind right value
 
 treeAdd :: Ord a => Tree a -> a -> Tree a
-treeAdd Leaf value = Node [value] Leaf Leaf
-treeAdd (Node [] _ _) _ = error "Unexpected empty list in Node"
-treeAdd (Node (x:xs) left right) value
-  | x == value = Node (value : x : xs) left right
-  | x > value = Node (x : xs) (treeAdd left value) right
-  | otherwise = Node (x : xs) left (treeAdd right value)
+treeAdd Leaf value = Node (value :| []) Leaf Leaf
+treeAdd (Node list@(x :| xs) left right) value
+  | x == value = Node (value :| (x : xs)) left right
+  | x > value = Node list (treeAdd left value) right
+  | otherwise = Node list left (treeAdd right value)
 
 -- |
 -- >>> let (ans, ok) = treeRemove (treeFromList [2, 1, 5, 19, -1]) 5
@@ -324,8 +349,7 @@ treeAdd (Node (x:xs) left right) value
 -- [-1,1,2,19]
 treeRemove :: Ord a => Tree a -> a -> (Tree a, Bool)
 treeRemove Leaf _ = (Leaf, False)
-treeRemove (Node [] _ _) _ = error "Unexpected empty list in Node"
-treeRemove (Node (x:xs) left right) value
+treeRemove (Node list@(x:|xs) left right) value
   | x == value =
     case xs of
       [] ->
@@ -333,16 +357,16 @@ treeRemove (Node (x:xs) left right) value
           Leaf -> (left, True)
           _ ->
             let (removed, tree) = treeMinRemove right
-             in (Node removed left tree, True)
-      _ -> (Node xs left right, True)
+            in (Node removed left tree, True)
+      (y:ys) -> (Node (y :| ys) left right, True)
   | x > value =
     let (ans, ok) = treeRemove left value
-     in (Node (x : xs) ans right, ok)
+    in (Node list ans right, ok)
   | otherwise =
     let (ans, ok) = treeRemove right value
-     in (Node (x : xs) left ans, ok)
+    in (Node list left ans, ok)
 
-treeMinRemove :: Ord a => Tree a -> ([a], Tree a)
+treeMinRemove :: Ord a => Tree a -> (NonEmpty a, Tree a)
 treeMinRemove Leaf = error "Unexpected empty tree"
 treeMinRemove (Node list Leaf _) = (list, Leaf)
 treeMinRemove (Node list left right) = (deleted, Node list leftPrepared right)
