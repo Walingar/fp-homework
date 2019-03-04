@@ -8,7 +8,10 @@ module Task4
 import Data.Function (fix)
 
 iterateElement :: a -> [a]
-iterateElement = undefined
+iterateElement = fix iterate'
+  where
+    iterate' :: (a -> [a]) -> a -> [a]
+    iterate' rec cur = cur : rec cur
 
 fibonacci :: Integer -> Integer
 fibonacci = fix fibonacci'
