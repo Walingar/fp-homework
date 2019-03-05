@@ -107,7 +107,7 @@ fromString = foldr f mempty
 -- >>> toString $ fromString ""
 -- ""
 toString :: Builder -> String
-toString (One ch) = [ch]
+toString (One ch)    = [ch]
 toString (Many list) = foldr f "" list
   where
     f :: Builder -> String -> String

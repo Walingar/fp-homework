@@ -30,8 +30,8 @@ remove ind list = remove' (splitAt ind list)
 -- >>> exampleSorted == (mergeSort example)
 -- True
 mergeSort :: Ord a => [a] -> [a]
-mergeSort [] = []
-mergeSort [a] = [a]
+mergeSort []   = []
+mergeSort [a]  = [a]
 mergeSort list = mergeImpl (mergeSort left) (mergeSort right)
   where
     (left, right) = splitAt (length list `div` 2) list

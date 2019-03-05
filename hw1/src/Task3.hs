@@ -368,7 +368,7 @@ treeRemove (Node list@(x:|xs) left right) value
 
 treeMinRemove :: Ord a => Tree a -> (NonEmpty a, Tree a)
 treeMinRemove Leaf = error "Unexpected empty tree"
-treeMinRemove (Node list Leaf _) = (list, Leaf)
+treeMinRemove (Node list Leaf _)     = (list, Leaf)
 treeMinRemove (Node list left right) = (deleted, Node list leftPrepared right)
   where
     (deleted, leftPrepared) = treeMinRemove left
@@ -377,6 +377,7 @@ instance Foldable Tree where
   foldMap :: Monoid m => (a -> m) -> Tree a -> m
   foldMap _ Leaf                = mempty
   foldMap f (Node x left right) = foldMap f left <> foldMap f x <> foldMap f right
+
   foldr :: (a -> b -> b) -> b -> Tree a -> b
   foldr _ z Leaf                = z
   foldr f z (Node k left right) = foldr f (foldr f (foldr f z right) k) left
