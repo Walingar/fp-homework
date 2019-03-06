@@ -7,8 +7,6 @@ module Task5
   , toString
   ) where
 
-import Task4 (NonEmpty (..))
-
 -- |
 -- >>> maybeConcat [Just [1,2,3], Nothing, Just [4,5]]
 -- [1,2,3,4,5]

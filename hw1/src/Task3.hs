@@ -40,7 +40,6 @@ module Task3
   , treeSize
   ) where
 
-import Data.Foldable (Foldable (..))
 import Task4 (NonEmpty (..))
 
 data Day
@@ -171,8 +170,8 @@ lordIsComing (City (Just (CastleWithLord False, wall)) educationStructure houses
 buildTheWallAndHoldTheDoor :: City -> CityProcessResult
 buildTheWallAndHoldTheDoor (City (Just (CastleWithLord True, CityWall False)) educationStructure houses) =
   if countPeople houses >= 10
-    then Success $ City (Just (CastleWithLord True, CityWall True)) educationStructure houses
-    else Error "Can't build the wall because there are not enough people"
+  then Success $ City (Just (CastleWithLord True, CityWall True)) educationStructure houses
+  else Error "Can't build the wall because there are not enough people"
 buildTheWallAndHoldTheDoor (City (Just (CastleWithLord False, CityWall False)) _ _) =
   Error "Can't build the wall because there is no Lord"
 buildTheWallAndHoldTheDoor (City (Just (_, CityWall True)) _ _) =
@@ -298,6 +297,7 @@ data Tree a
   deriving (Show)
 
 -- |
+-- >>> import Data.Foldable (Foldable (..))
 -- >>> toList $ treeFromList [2, 1, 5, 19, -1]
 -- [-1,1,2,5,19]
 treeFromList :: Ord a => [a] -> Tree a
@@ -346,13 +346,14 @@ treeAdd (Node list@(x :| xs) left right) value
   | otherwise = Node list left (treeAdd right value)
 
 -- |
+-- >>> import Data.Foldable (Foldable (..))
 -- >>> let (ans, ok) = treeRemove (treeFromList [2, 1, 5, 19, -1]) 5
 --
 -- >>> toList $ ans
 -- [-1,1,2,19]
 treeRemove :: Ord a => Tree a -> a -> (Tree a, Bool)
 treeRemove Leaf _ = (Leaf, False)
-treeRemove (Node list@(x:|xs) left right) value
+treeRemove (Node list@(x :| xs) left right) value
   | x == value =
     case xs of
       [] ->
@@ -362,10 +363,10 @@ treeRemove (Node list@(x:|xs) left right) value
             let (removed, tree) = treeMinRemove right
             in (Node removed left tree, True)
       (y:ys) -> (Node (y :| ys) left right, True)
-  | x > value =
+  | x > value  =
     let (ans, ok) = treeRemove left value
     in (Node list ans right, ok)
-  | otherwise =
+  | otherwise  =
     let (ans, ok) = treeRemove right value
     in (Node list left ans, ok)
 

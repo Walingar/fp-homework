@@ -1,9 +1,9 @@
 {-# LANGUAGE InstanceSigs #-}
 
 module Task4
-  ( joinWith
+  ( NonEmpty (..)
+  , joinWith
   , splitOn
-  , NonEmpty (..)
   ) where
 
 data Pair a =
