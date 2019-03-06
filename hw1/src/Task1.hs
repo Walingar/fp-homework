@@ -1,6 +1,7 @@
 module Task1
   ( contains
   , order3
+  , order3Safe
   , smartReplicate
   , stringSum
   ) where
@@ -14,6 +15,25 @@ order3 :: Ord a => (a, a, a) -> (a, a, a)
 order3 (a, b, c) = (x, y, z)
   where
     [x, y, z] = sort [a, b, c]
+
+-- |
+-- >>> order3Safe (5, 10, 2)
+-- (2,5,10)
+order3Safe :: Ord a => (a, a, a) -> (a, a, a)
+order3Safe (a, b, c) = (min3 a b c, mid3 a b c, max3 a b c)
+  where
+    min3 :: Ord a => a -> a -> a -> a
+    min3 x y z = min x $ min y z
+
+    mid3 :: Ord a => a -> a -> a -> a
+    mid3 x y z
+      | min3 x y z < y && y < max3 x y z = y
+      | min3 x y z < x && x < max3 x y z = x
+      | min3 x y z < z && z < max3 x y z = z
+      | otherwise                        = min3 x y z
+
+    max3 :: Ord a => a -> a -> a -> a
+    max3 x y z = max x $ max y z
 
 -- |
 -- >>> smartReplicate [1,2,3]

@@ -1,25 +1,27 @@
 {-# LANGUAGE InstanceSigs #-}
 
 module Task3
-  ( CastleWithLord(..)
-  , City(..)
-  , CityProcessResult(..)
-  , CityWall(..)
-  , Day(..)
-  , EducationStructure(..)
-  , Family(..)
-  , HouseList(..)
-  , Nat(..)
-  , Tree(..)
+  ( Day (..)
   , afterDays
+  , daysToParty
+  , isWeekend
+  , nextDay
+
+  , CastleWithLord (..)
+  , City (..)
+  , CityProcessResult (..)
+  , CityWall (..)
+  , EducationStructure (..)
+  , Family (..)
+  , HouseList (..)
+  , lordIsComing
   , buildCastle
   , buildEducationStructure
   , buildHouse
   , buildTheWallAndHoldTheDoor
-  , daysToParty
+
+  , Nat (..)
   , intToNat
-  , isWeekend
-  , lordIsComing
   , natToInt
   , natDiv
   , natSum
@@ -27,7 +29,8 @@ module Task3
   , natSub
   , natIsEven
   , natMod
-  , nextDay
+
+  , Tree (..)
   , treeAdd
   , treeContains
   , treeFind
@@ -194,7 +197,7 @@ natToInt (S a) = 1 + natToInt a
 -- S (S (S (S Z)))
 intToNat :: Int -> Nat
 intToNat x
-  | x < 0 = error "Expected argument > 0"
+  | x < 0 = error "Expected argument >= 0"
   | x == 0 = Z
   | otherwise = S $ intToNat (x - 1)
 
@@ -270,7 +273,7 @@ natIsEven (S (S a)) = natIsEven a
 natDiv :: Nat -> Nat -> Nat
 natDiv _ Z = error "Expected non-zero second argument"
 natDiv a b
-  | a < b    = Z
+  | a < b     = Z
   | otherwise = S $ natDiv (natSub a b) b
 
 -- |
@@ -284,7 +287,7 @@ natDiv a b
 -- 23
 natMod :: Nat -> Nat -> Nat
 natMod a b
-  | a < b    = a
+  | a < b     = a
   | otherwise = natSub a (natMul (natDiv a b) b)
 
 data Tree a

@@ -1,7 +1,7 @@
 module Task6
-  ( x1
+  ( foo
+  , x1
   , x2
-  , foo
   ) where
 
 import Data.Maybe (mapMaybe)

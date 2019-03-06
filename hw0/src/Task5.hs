@@ -28,5 +28,7 @@ intToChurch :: Integer -> Nat Integer
 intToChurch y = \f x -> intToChurch' f x y
   where
     intToChurch' :: (Integer -> Integer) -> Integer -> Integer -> Integer
-    intToChurch' _ x 0 = x
-    intToChurch' f x n = f $ intToChurch' f x (n - 1)
+    intToChurch' f x n
+      | n < 0     = error "Excepted argument >= 0"
+      | n == 0    = x
+      | otherwise = f $ intToChurch' f x (n - 1)

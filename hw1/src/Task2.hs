@@ -1,13 +1,7 @@
 module Task2
   ( mergeSort
-  , randomIntList
   , remove
   ) where
-
-import System.Random (newStdGen, randomRs)
-
-randomIntList :: Int -> Int -> Int -> IO [Int]
-randomIntList n from to = take n . randomRs (from, to) <$> newStdGen
 
 -- |
 -- >>> remove 3 [1, 2, 3, 4, 5]
@@ -17,14 +11,23 @@ randomIntList n from to = take n . randomRs (from, to) <$> newStdGen
 -- >>> remove 0 [1, 2, 3, 4, 5]
 -- ([2,3,4,5],Just 1)
 remove :: Int -> [a] -> ([a], Maybe a)
-remove ind list = remove' (splitAt ind list)
-  where
-    remove' :: ([a], [a]) -> ([a], Maybe a)
-    remove' (x, [])   = (x, Nothing)
-    remove' (x, y:ys) = (x ++ ys, Just y)
+remove ind list =
+  if ind < 0
+  then error "Expected index >= 0"
+  else remove' (splitAt ind list)
+    where
+      remove' :: ([a], [a]) -> ([a], Maybe a)
+      remove' (x, [])   = (x, Nothing)
+      remove' (x, y:ys) = (x ++ ys, Just y)
 
 -- |
+-- >>> import System.Random (newStdGen, randomRs)
 -- >>> import Data.List (sort)
+-- >>> :{
+--   randomIntList :: Int -> Int -> Int -> IO [Int]
+--   randomIntList n from to = take n . randomRs (from, to) <$> newStdGen
+-- :}
+--
 -- >>> example <- randomIntList 20 (-10) 10
 -- >>> let exampleSorted = sort example
 -- >>> exampleSorted == (mergeSort example)

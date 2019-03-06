@@ -3,7 +3,7 @@
 module Task4
   ( joinWith
   , splitOn
-  , NonEmpty(..)
+  , NonEmpty (..)
   ) where
 
 data Pair a =
