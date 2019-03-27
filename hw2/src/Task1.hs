@@ -56,7 +56,7 @@ instance Applicative NonEmpty where
   pure :: a -> NonEmpty a
   pure x = x :| []
   (<*>) :: NonEmpty (a -> b) -> NonEmpty a -> NonEmpty b
-  (<*>) (f :| fs) (x :| xs) = f x :| ((f <$> xs) ++ (fs <*> xs))
+  (<*>) (f :| fs) (x :| xs) = f x :| ((f <$> xs) ++ (fs <*> (x:xs)))
 
 instance Foldable NonEmpty where
   foldMap :: Monoid m => (a -> m) -> NonEmpty a -> m
