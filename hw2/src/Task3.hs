@@ -79,9 +79,6 @@ stream (x:xs) = do
   _ <- element x
   stream xs
 
-fail :: Parser a s
-fail = Parser $ const Nothing
-
 anyElement :: Parser s s
 anyElement = satisfy (const True)
 
