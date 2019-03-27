@@ -20,7 +20,9 @@ library
   hs-source-dirs:      src
   exposed-modules:     Task1
                      , Task2
-                     , Task2MonadInstances
+                     , Task2Monad
+                     , Task2MonadFish
+                     , Task2MonadJoin
                      , Task3
   ghc-options:         -Wall
   build-depends:       base >= 4.9 && < 5
@@ -35,4 +37,7 @@ test-suite hw2-test
                      , hw2
                      , hspec
   ghc-options:         -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
+  other-modules:       Task1Spec
+                     , Task2Spec
+                     , Task3Spec
   default-language:    Haskell2010

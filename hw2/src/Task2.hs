@@ -1,13 +1,13 @@
 module Task2
-  ( ArithmeticError
-  , Expr
-  , Operation
-  , QueueDouble
+  ( ArithmeticError(..)
+  , Expr(..)
+  , Operation(..)
+  , QueueDouble(..)
   , eval
   , moving
   ) where
 
-import Control.Monad.State
+import Control.Monad.State (State, execState, state)
 
 data Operation
   = Add
@@ -27,7 +27,7 @@ data Expr
 data ArithmeticError
   = DivisionByZero
   | NegativePow
-  deriving (Show)
+  deriving (Show, Eq)
 
 eval :: Expr -> Either ArithmeticError Int
 eval (Const a) = Right a

@@ -14,7 +14,7 @@ stringSum st = collect $ traverse readMaybe (words st)
   where
     collect :: Maybe [Int] -> Maybe Int
     collect (Just a) = Just $ sum a
-    collect Nothing = Nothing
+    collect Nothing  = Nothing
 
 data Tree a
   = Branch (Tree a)
