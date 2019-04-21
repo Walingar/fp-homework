@@ -8,6 +8,7 @@ import GrammarExpressions (AssignmentData (..), Code (..), ValueBuilder (..), Va
                            VarValue (..))
 import Text.Megaparsec (Parsec, anySingle, eof, many, manyTill, parse)
 import Text.Megaparsec.Char (alphaNumChar, char, digitChar, eol, space)
+import Text.Megaparsec.Error (errorBundlePretty)
 
 type Parser = Parsec Void String
 
@@ -65,9 +66,11 @@ parseAssignmentValue :: Parser [ValueBuilder]
 parseAssignmentValue = do
   value <- parseValue
   continue <-
-    fmap Left (many (char ' ') *> fmap First (char ';') <|> fmap Second eof <|> fmap Third eol) <|> fmap Right (pure ())
+    fmap Left (fmap First (char ';' <|> char ' ') <|> fmap Second eof <|> fmap Third eol) <|> fmap Right (pure ())
   case continue of
-    Left _ -> return value
+    Left _ -> do
+      _ <- many $ fmap Left (char ' ' <|> char ';') <|> fmap Right eol
+      return value
     Right _ -> do
       suffix <- parseAssignmentValue
       case value of
@@ -95,6 +98,6 @@ codeParse :: String -> IO Code
 codeParse input =
   case parse code "log.txt" input of
     Left err -> do
-      print err
+      putStrLn $ errorBundlePretty err
       return (Code [])
     Right parsedCode -> return $ Code parsedCode
