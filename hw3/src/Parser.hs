@@ -40,10 +40,11 @@ parseValue = do
   chr <- anySingle
   case chr of
     '\\' -> do
-      nextChr <- char '$' <|> char '\\'
+      nextChr <- char '$' <|> char '"' <|> char '\\'
       return [ValueBuilderElement [nextChr]]
     '\'' -> parseSingleQuotes'
     '$' -> parseVarWithDollar'
+    '"' -> parseDoubleQuotes'
     ch -> return [ValueBuilderElement [ch]]
 
 appendToValueBuilderList :: ValueBuilder -> [ValueBuilder] -> [ValueBuilder]
@@ -61,6 +62,24 @@ parseSingleQuotes' :: Parser [ValueBuilder]
 parseSingleQuotes' = do
   value <- manyTill anySingle (char '\'')
   return [ValueBuilderElement value]
+
+parseDoubleQuotes' :: Parser [ValueBuilder]
+parseDoubleQuotes' = do
+  chr <- anySingle
+  case chr of
+    '"' -> return []
+    '\\' -> do
+      nextChr <- anySingle
+      case nextChr of
+        '$' -> appendToValueBuilderList (ValueBuilderElement "$") <$> parseDoubleQuotes'
+        '\\' -> appendToValueBuilderList (ValueBuilderElement "\\") <$> parseDoubleQuotes'
+        '"' -> appendToValueBuilderList (ValueBuilderElement "\"") <$> parseDoubleQuotes'
+        _ -> appendToValueBuilderList (ValueBuilderElement ['\\', nextChr]) <$> parseDoubleQuotes'
+    '$' -> do
+      var <- parseVarWithDollar'
+      suffix <- parseDoubleQuotes'
+      return $ var ++ suffix
+    _ -> appendToValueBuilderList (ValueBuilderElement [chr]) <$> parseDoubleQuotes'
 
 parseAssignmentValue :: Parser [ValueBuilder]
 parseAssignmentValue = do
