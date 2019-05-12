@@ -1,6 +1,6 @@
 module Main where
 
-import Task1Benchmark (multiplyBenchmark)
+import Task2Benchmark (pointsBenchmark)
 
 main :: IO ()
-main = multiplyBenchmark
+main = pointsBenchmark

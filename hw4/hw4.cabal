@@ -25,6 +25,7 @@ benchmark hw4-benchmark
                       hw4,
                       criterion
   other-modules:      Task1Benchmark
+                    , Task2Benchmark
   default-language:   Haskell2010
 
 library
