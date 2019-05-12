@@ -2,12 +2,14 @@
 
 module Task2
   ( Point(..)
-  , plus
-  , minus
-  , scalarProduct
-  , crossProduct
-  , perimeter
   , doubleArea
+  , doubleAreaSimple
+  , crossProduct
+  , minus
+  , perimeter
+  , perimeterSimple
+  , plus
+  , scalarProduct
   ) where
 
 data Point =
@@ -35,11 +37,23 @@ distance (Point !x1 !y1) (Point !x2 !y2) =
 perimeter :: [Point] -> Double
 perimeter [] = 0
 perimeter (x:xs) =
-  let res' = foldr (\curPoint (res, prevPoint) -> (res + distance curPoint prevPoint, curPoint)) (0, x) xs
+  let res' = foldr (\ !curPoint (!res, !prevPoint) -> (res + distance curPoint prevPoint, curPoint)) (0, x) xs
+   in fst res' + distance x (snd res')
+
+perimeterSimple :: [Point] -> Double
+perimeterSimple [] = 0
+perimeterSimple (x:xs) =
+  let res' = foldr (\ !curPoint (res, prevPoint) -> (res + distance curPoint prevPoint, curPoint)) (0, x) xs
    in fst res' + distance x (snd res')
 
 doubleArea :: [Point] -> Int
 doubleArea [] = 0
 doubleArea (x:xs) =
-  let res' = foldr (\curPoint (res, prevPoint) -> (res + crossProduct curPoint prevPoint, curPoint)) (0, x) xs
+  let res' = foldr (\ !curPoint (!res, !prevPoint) -> (res + crossProduct curPoint prevPoint, curPoint)) (0, x) xs
+   in fst res' + crossProduct x (snd res')
+
+doubleAreaSimple :: [Point] -> Int
+doubleAreaSimple [] = 0
+doubleAreaSimple (x:xs) =
+  let res' = foldr (\ !curPoint (res, prevPoint) -> (res + crossProduct curPoint prevPoint, curPoint)) (0, x) xs
    in fst res' + crossProduct x (snd res')
