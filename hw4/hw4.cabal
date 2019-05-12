@@ -16,6 +16,17 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 tested-with:         GHC == 8.0.1
 
+benchmark hw4-benchmark
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  hs-source-dirs:     benchmark
+  ghc-options:        -Wall -threaded -rtsopts -with-rtsopts=-N4
+  build-depends:      base >=4.9 && <5,
+                      hw4,
+                      criterion
+  other-modules:      Task1Benchmark
+  default-language:   Haskell2010
+
 library
   hs-source-dirs:      src
   exposed-modules:     Task1

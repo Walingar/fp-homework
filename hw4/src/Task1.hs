@@ -3,6 +3,8 @@
 module Task1
   ( multiply
   , multiplySimple
+  , multiplySimpleStrict
+  , multiplyVector
   ) where
 
 import Control.Monad.ST
@@ -14,7 +16,10 @@ import qualified Data.Vector.Unboxed as VU
 import qualified Data.Vector.Unboxed.Mutable as MU
 
 multiply :: [[Int]] -> [[Int]] -> Maybe [[Int]]
-multiply a b =
+multiply = multiplySimple
+
+multiplyVector :: [[Int]] -> [[Int]] -> Maybe [[Int]]
+multiplyVector a b =
   if not (checkMatrix a b)
     then Nothing
     else Just $ multiply' a b
@@ -78,4 +83,14 @@ multiplySimple :: [[Int]] -> [[Int]] -> Maybe [[Int]]
 multiplySimple a b =
   if not (checkMatrix a b)
     then Nothing
-    else Just [[sum $ zipWith (*) a' b' | b' <- transpose b] | a' <- a]
+    else Just [[sum $ zipWith (*) a' b' | b' <- transposedB] | a' <- a]
+  where
+    transposedB = transpose b
+
+multiplySimpleStrict :: [[Int]] -> [[Int]] -> Maybe [[Int]]
+multiplySimpleStrict a b =
+  if not (checkMatrix a b)
+    then Nothing
+    else Just [[sum $ zipWith (*) a' b' | !b' <- transposedB] | !a' <- a]
+  where
+    transposedB = transpose b
