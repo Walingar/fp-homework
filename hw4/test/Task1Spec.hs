@@ -1,7 +1,7 @@
 module Task1Spec where
 
 import Task1 (multiplySimple, multiply)
-import Test.Hspec
+import Test.Hspec (Spec, shouldBe, it)
 
 spec :: Spec
 spec = do
