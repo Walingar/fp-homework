@@ -7,7 +7,7 @@ module Task1
   , multiplyVector
   ) where
 
-import Control.Monad.ST
+import Control.Monad.ST (ST, runST)
 import Data.Foldable (forM_)
 import Data.List (transpose)
 import qualified Data.Vector as V
