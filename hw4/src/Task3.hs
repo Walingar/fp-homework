@@ -64,11 +64,14 @@ gauss a b =
                 el <- MU.read row k
                 MU.write row' k (el' /= el)
     resultList <- boolArrayToList b'
-    return $ Just resultList
+    return $
+      if verifySolution a b resultList
+        then Just resultList
+        else Nothing
 
 countRow :: [Bool] -> [Bool] -> Bool
-countRow [x] [y]       = x /= y
-countRow (x:xs) (y:ys) = (x /= y) && countRow xs ys
+countRow [x] [y]       = x && y
+countRow (x:xs) (y:ys) = (x && y) /= countRow xs ys
 countRow _ _           = error "Input data is incorrect. Expected N, N matrices."
 
 verifySolution :: [[Bool]] -> [Bool] -> [Bool] -> Bool
