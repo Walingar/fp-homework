@@ -26,17 +26,17 @@ multiplyVector a b =
 
 type IntArray s = MU.MVector s Int
 
-type Matrix s = ST s (M.MVector s (IntArray s))
+type Matrix s = M.MVector s (IntArray s)
 
 toIntArray :: [Int] -> ST s (IntArray s)
 toIntArray list = VU.thaw $ VU.fromList list
 
-toMatrix :: [[Int]] -> Matrix s
+toMatrix :: [[Int]] -> ST s (Matrix s)
 toMatrix matrix = do
   lists <- traverse toIntArray matrix
   V.thaw $ V.fromList lists
 
-emptyMatrix' :: Int -> Int -> Matrix s
+emptyMatrix' :: Int -> Int -> ST s (Matrix s)
 emptyMatrix' n k =
   let line = replicate k 0
    in toMatrix (replicate n line)
